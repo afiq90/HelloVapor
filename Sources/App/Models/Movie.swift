@@ -8,7 +8,7 @@
 import Vapor
 import FluentSQLite
 
-struct Movie: Codable {
+final class Movie: Codable {
     var id: Int?
     var title: String
     var actors: [Actors]?
@@ -21,7 +21,7 @@ struct Movie: Codable {
     }
 }
 
-struct Actors: Codable {
+final class Actors: Codable {
     var name: String
     var age: Int
 }
