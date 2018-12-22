@@ -39,6 +39,23 @@ public func routes(_ router: Router) throws {
     router.get("todos", use: todoController.index)
     router.post("todos", use: todoController.create)
     router.delete("todos", Todo.parameter, use: todoController.delete)
+    
+    // Configuring for Acronym
+    let acronymController = AcronymsController()
+    try router.register(collection: acronymController)
+    
+    // Configuring for Person
+    let personController = PersonsController()
+    try router.register(collection: personController)
+    
+    // Configuring for Car
+    let carController = CarsController()
+    try router.register(collection: carController)
+    
+    // Configuring for Movie
+    let movieController = MovieController()
+    try router.register(collection: movieController)
+
 }
 
 struct UserInfo: Content {
