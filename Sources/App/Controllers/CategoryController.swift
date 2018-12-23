@@ -6,6 +6,7 @@
 //
 
 import Vapor
+import Fluent
 
 struct CategoryController: RouteCollection {
     
@@ -14,6 +15,7 @@ struct CategoryController: RouteCollection {
         categoryRoute.post(use: createCategory)
         categoryRoute.get(use: getAllCategory)
         categoryRoute.get(Category.parameter, use: getCategory)
+        categoryRoute.get(Category.parameter, "acronyms", use: getAcronyms)
     }
     
     // create category
@@ -30,5 +32,12 @@ struct CategoryController: RouteCollection {
     // get category
     func getCategory(_ req: Request) throws -> Future<Category> {
         return try req.parameters.next(Category.self)
+    }
+    
+    // get many acronym
+    func getAcronyms(_ req: Request) throws -> Future<[Acronym]> {
+        return try req.parameters.next(Category.self).flatMap(to: [Acronym].self) { category in
+            try category.acronyms.query(on: req).all()
+        }
     }
 }
