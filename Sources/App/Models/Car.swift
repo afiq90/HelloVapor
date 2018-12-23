@@ -6,7 +6,7 @@
 //
 
 import Vapor
-import FluentSQLite
+import FluentMySQL
 
 struct Car: Codable {
     var id: Int?
@@ -20,6 +20,6 @@ struct Car: Codable {
     
 }
 
-extension Car: SQLiteModel {}
+extension Car: MySQLModel {}
 extension Car: Content {}
 extension Car: Migration {}

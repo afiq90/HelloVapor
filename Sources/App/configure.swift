@@ -1,10 +1,13 @@
-import FluentSQLite
+import FluentMySQL
 import Vapor
+import Leaf
 
 /// Called before your application initializes.
 public func configure(_ config: inout Config, _ env: inout Environment, _ services: inout Services) throws {
     /// Register providers first
-    try services.register(FluentSQLiteProvider())
+    try services.register(FluentMySQLProvider())
+    try services.register(LeafProvider())
+
 
     /// Register routes to the router
     let router = EngineRouter.default()
@@ -17,24 +20,25 @@ public func configure(_ config: inout Config, _ env: inout Environment, _ servic
     middlewares.use(ErrorMiddleware.self) // Catches errors and converts to HTTP response
     services.register(middlewares)
 
-    // Configure a SQLite database
-    let sqlite = try SQLiteDatabase(storage: .memory)
 
     /// Register the configured SQLite database to the database config.
     var databases = DatabasesConfig()
-    databases.add(database: sqlite, as: .sqlite)
+    let dbConfig = MySQLDatabaseConfig(hostname: "localhost", port: 3306, username: "afiq", password: "password", database: "Vapor", transport: MySQLTransportConfig.unverifiedTLS)
+    let database = MySQLDatabase(config: dbConfig)
+    databases.add(database: database, as: .mysql)
+    databases.enableLogging(on: .mysql)
     services.register(databases)
 
     /// Configure migrations
     var migrations = MigrationConfig()
-    migrations.add(model: Todo.self, database: .sqlite)
-    migrations.add(model: Acronym.self, database: .sqlite)
-    migrations.add(model: Person.self, database: .sqlite)
-    migrations.add(model: Car.self, database: .sqlite)
-    migrations.add(model: Movie.self, database: .sqlite)
-    migrations.add(model: User.self, database: .sqlite)
-    migrations.add(model: Category.self, database: .sqlite)
-    migrations.add(model: AcronymCategoryPivot.self, database: .sqlite)
+    migrations.add(model: Todo.self, database: .mysql)
+    migrations.add(model: Acronym.self, database: .mysql)
+    migrations.add(model: Person.self, database: .mysql)
+    migrations.add(model: Car.self, database: .mysql)
+    migrations.add(model: Movie.self, database: .mysql)
+    migrations.add(model: User.self, database: .mysql)
+    migrations.add(model: Category.self, database: .mysql)
+    migrations.add(model: AcronymCategoryPivot.self, database: .mysql)
     services.register(migrations)
 
 }

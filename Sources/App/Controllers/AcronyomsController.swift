@@ -51,7 +51,7 @@ struct AcronymsController: RouteCollection {
             throw Abort(.badRequest, reason: "Missing search term in request")
         }
 
-        return try Acronym.query(on: req).group(.or) { or in
+        return Acronym.query(on: req).group(.or) { or in
             or.filter(\.short == searchTerm)
             or.filter(\.long == searchTerm)
         }.all()

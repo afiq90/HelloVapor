@@ -6,7 +6,7 @@
 //
 
 import Vapor
-import FluentSQLite
+import FluentMySQL
 
 final class User: Codable {
     var id: UUID?
@@ -19,7 +19,7 @@ final class User: Codable {
     }
 }
 
-extension User: SQLiteUUIDModel {}
+extension User: MySQLUUIDModel {}
 extension User: Content {}
 extension User: Parameter {}
 extension User: Migration {}

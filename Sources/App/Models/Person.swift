@@ -6,7 +6,7 @@
 //
 
 import Vapor
-import FluentSQLite
+import FluentMySQL
 
 final class Person: Codable {
     var id: Int?
@@ -24,6 +24,6 @@ final class Person: Codable {
     
 }
 
-extension Person: SQLiteModel {}
+extension Person: MySQLModel {}
 extension Person: Content {}
 extension Person: Migration {}

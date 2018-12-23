@@ -6,7 +6,7 @@
 //
 
 import Vapor
-import FluentSQLite
+import FluentMySQL
 
 final class Movie: Codable {
     var id: Int?
@@ -26,6 +26,6 @@ final class Actors: Codable {
     var age: Int
 }
 
-extension Movie: SQLiteModel {}
+extension Movie: MySQLModel {}
 extension Movie: Content {}
 extension Movie: Migration {}

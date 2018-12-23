@@ -6,10 +6,10 @@
 //
 
 import Vapor
-import FluentSQLite
+import FluentMySQL
 import Foundation
 
-final class AcronymCategoryPivot: SQLiteUUIDPivot {
+final class AcronymCategoryPivot: MySQLUUIDPivot {
     var id: UUID?
     var acronymID: Acronym.ID
     var categoryID: Category.ID

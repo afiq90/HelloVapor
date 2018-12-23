@@ -63,6 +63,10 @@ public func routes(_ router: Router) throws {
     // Configuring for Category
     let categoryController = CategoryController()
     try router.register(collection: categoryController)
+    
+    // Configuring for WebsiteController
+    let websiteController = WebsiteController()
+    try router.register(collection: websiteController)
 
 }
 
