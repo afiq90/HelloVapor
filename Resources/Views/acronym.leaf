@@ -1,6 +1,5 @@
-
-#set("content"){
-  <h2>#(acronym.long)</h2>
+#set("content") {
+  <h1>#(acronym.short)</h1>
   <h2>#(acronym.long)</h2>
 
   <p>
@@ -9,4 +8,3 @@
 }
 
 #embed("base")
-
