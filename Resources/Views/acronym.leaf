@@ -1,15 +1,12 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <title>#(title) | Acronyms</title>
-</head>
-<body>
-  <h1>#(acronym.short)</h1>
+
+#set("content"){
+  <h2>#(acronym.long)</h2>
   <h2>#(acronym.long)</h2>
 
   <p>
-    Created by #(creator.name)
+    Created by <a href="/users/#(creator.id)/">#(creator.name)</a>
   </p>
-</body>
-</html>
+}
+
+#embed("base")
+
