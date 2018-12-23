@@ -55,6 +55,14 @@ public func routes(_ router: Router) throws {
     // Configuring for Movie
     let movieController = MovieController()
     try router.register(collection: movieController)
+    
+    // Configuring for User
+    let userController = UserController()
+    try router.register(collection: userController)
+    
+    // Configuring for Category
+    let categoryController = CategoryController()
+    try router.register(collection: categoryController)
 
 }
 
