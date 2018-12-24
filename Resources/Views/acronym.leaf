@@ -1,9 +1,24 @@
 #set("content") {
-  <h1>#(acronym.short)</h1>
-  <h2>#(acronym.long)</h2>
+  
+   <table class="table table-bordered table-hover">
+      <thead class="thead-light">
+        <tr>
+          <th>
+            Short
+          </th>
+          <th>
+            Long
+          </th>
+        </tr>
+      </thead>
+    <tr>
+      <td><h3>#(acronym.short)</h3></td>
+      <td><h3>#(acronym.long)</h3></td>
+    </tr>
+    </table>
 
   <p>
-    Created by <a href="/users/#(creator.id)/">#(creator.name)</a>
+    <h5>Created by <a href="/user/#(creator.id)/">#(creator.name)</a></h5>
   </p>
 }
 

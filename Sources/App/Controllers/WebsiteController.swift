@@ -13,8 +13,12 @@ struct WebsiteController: RouteCollection {
     func boot(router: Router) throws {
         router.get(use: indexHandler)
         router.get("acronyms", Acronym.parameter, use: acronymHandler)
-        router.get("users", User.parameter, use: userHandler)
-
+        router.get("user", User.parameter, use: userHandler)
+        router.get("users", use: usersHandler)
+        router.get("category", Category.parameter, use: categoryHandler)
+        router.get("categories", use: categoriesHandler)
+        router.get("create-acronym", use: createAcronymHandler)
+        router.post("create-acronym", use: createAcronymPostHandler)
     }
     
     func indexHandler(_ req: Request) throws -> Future<View> {
@@ -44,6 +48,70 @@ struct WebsiteController: RouteCollection {
             }
         }
     }
+    
+    func usersHandler(_ req: Request) throws -> Future<View> {
+        return User.query(on: req).all().flatMap(to: View.self) { users in
+            let context = UsersContext(users: users.isEmpty ? nil : users)
+            for user in users {
+                print(user.name)
+                print(user.username)
+            }
+            return try req.leaf().render("users", context)
+        }
+    }
+    
+    func categoryHandler(_ req: Request) throws -> Future<View>  {
+        return try req.parameters.next(Category.self).flatMap(to: View.self) { category in
+            return try category.acronyms.query(on: req).all().flatMap(to: View.self) { acronyms in
+                let context = CategoryContext(name: category.name, category: category, acronyms: acronyms.isEmpty ? nil : acronyms)
+                return try req.leaf().render("category", context)
+            }
+        }
+    }
+    
+    
+    func categoriesHandler(_ req: Request) throws -> Future<View> {
+        return Category.query(on: req).all().flatMap(to: View.self) { categories in
+            let context = CategoriesContext(categories: categories.isEmpty ? nil : categories)
+            for category in categories {
+                print(category.acronyms)
+                print(category.name)
+            }
+            return try req.leaf().render("categories", context)
+        }
+    }
+    
+
+    
+//    func createAcronymHandler(_ req: Request) throws -> Future<View> {
+//        return User.query(on: req).all().flatMap(to: View.self) { users in
+//            let context = createAcronymContext(title: "Create An Acronym", users: users)
+//            return try req.leaf().render("createAcronym", context)
+//        }
+//    }
+    
+    func createAcronymHandler(_ req: Request) throws -> Future<View> {
+        return User.query(on: req).all().flatMap(to: View.self) { users in
+            return Category.query(on: req).all().flatMap(to: View.self) { categories in
+                let context = createAcronymContext(title: "Create An Acronym", users: users, categories: categories)
+                return try req.leaf().render("createAcronym", context)
+            }
+        }
+    }
+    
+    func createAcronymPostHandler(_ req: Request) throws -> Future<Response> {
+        return try req.content.decode(AcronymPostData.self).flatMap(to: Response.self) { data in
+            let acronym = Acronym(long: data.acronymLong, short: data.acronymShort, creatorID: data.creator)
+            return acronym.save(on: req).map(to: Response.self) { acronym in
+                guard let id = acronym.id else {
+                    return req.redirect(to: "/")
+                }
+                return req.redirect(to: "/acronyms/\(id)")
+            }
+        }
+    }
+    
+    
 }
 
 extension Request {
@@ -68,3 +136,39 @@ struct UserContext: Encodable {
     let user: User
     let acronyms: [Acronym]?
 }
+
+struct UsersContext: Encodable {
+    let users: [User]?
+}
+
+struct CategoryContext: Encodable {
+    let name: String
+    let category: Category
+    let acronyms: [Acronym]?
+}
+
+struct CategoriesContext: Encodable {
+    let categories: [Category]?
+}
+
+struct createAcronymContext: Encodable {
+    let title: String
+    let users: [User]
+    let categories: [Category]
+}
+
+import Foundation
+
+struct AcronymPostData: Content {
+    static var defaultMediaType = MediaType.urlEncodedForm
+    let acronymLong: String
+    let acronymShort: String
+    let creator: UUID
+}
+
+/*
+ TODO:
+ 1) build all users page ✅
+ 2) build category page ✅
+ 3) build all categories page ✅
+ */
