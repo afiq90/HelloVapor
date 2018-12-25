@@ -16,7 +16,7 @@
       </thead>
       <tbody>
         #for(user in users) {
-          <tr><td><a href="/users/#(user.id)">#(user.username)</a></td><td>#(user.name)</td></tr>
+          <tr><td><a href="/user/#(user.id)">#(user.username)</a></td><td>#(user.name)</td></tr>
         }
       </tbody>
     </table>

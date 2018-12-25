@@ -13,9 +13,9 @@ struct WebsiteController: RouteCollection {
     func boot(router: Router) throws {
         router.get(use: indexHandler)
         router.get("acronyms", Acronym.parameter, use: acronymHandler)
-        router.get("users", User.parameter, use: userHandler)
+        router.get("user", User.parameter, use: userHandler)
         router.get("users", use: usersHandler)
-        router.get("categories", Category.parameter, use: categoryHandler)
+        router.get("category", Category.parameter, use: categoryHandler)
         router.get("categories", use: categoriesHandler)
         router.get("create-acronym", use: createAcronymHandler)
         router.post("create-acronym", use: createAcronymPostHandler)
