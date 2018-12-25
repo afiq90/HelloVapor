@@ -13,12 +13,18 @@ struct WebsiteController: RouteCollection {
     func boot(router: Router) throws {
         router.get(use: indexHandler)
         router.get("acronyms", Acronym.parameter, use: acronymHandler)
-        router.get("user", User.parameter, use: userHandler)
+        router.get("users", User.parameter, use: userHandler)
         router.get("users", use: usersHandler)
-        router.get("category", Category.parameter, use: categoryHandler)
+        router.get("categories", Category.parameter, use: categoryHandler)
         router.get("categories", use: categoriesHandler)
         router.get("create-acronym", use: createAcronymHandler)
         router.post("create-acronym", use: createAcronymPostHandler)
+        router.get("acronyms", Acronym.parameter, "edit", use: editAcronymHandler)
+        router.post("acronyms", Acronym.parameter, "edit", use: editAcronymPostHandler)
+        router.post("acronyms", Acronym.parameter, "delete", use: deleteAcronymHandler)
+      
+        
+
     }
     
     func indexHandler(_ req: Request) throws -> Future<View> {
@@ -110,8 +116,56 @@ struct WebsiteController: RouteCollection {
             }
         }
     }
+
+    func editAcronymHandler(_ req: Request) throws -> Future<View> {
+        return try flatMap(to: View.self, req.parameters.next(Acronym.self), User.query(on: req).all()) { acronym, users in
+            let context = EditAcronymContext(title: "Edit Acronym", acronym: acronym, users: users)
+            return try req.leaf().render("createAcronym", context)
+        }
+    }
+//
+//    func editAcronymHandler(_ req: Request) throws -> Future<View> {
+//        return try flatMap(to: View.self, req.parameters.next(Acronym.self), User.query(on: req).all()) { acronym, users in
+//            let context = EditAcronymContext(title: "Edit Acronym", acronym: acronym, users: users)
+//            return try req.leaf().render("createAcronym", context)
+//        }
+//    }
     
+    func editAcronymPostHandler(_ req: Request) throws -> Future<Response> {
+        return try flatMap(to: Response.self, req.parameters.next(Acronym.self), req.content.decode(AcronymPostData.self)) { acronym, data in
+            acronym.short = data.acronymShort
+            acronym.long = data.acronymLong
+            acronym.creatorID = data.creator
+
+            return acronym.save(on: req).map(to: Response.self) { acronym in
+                guard let id = acronym.id else {
+                    return req.redirect(to: "/")
+                }
+                return req.redirect(to: "/acronyms/\(id)")
+            }
+        }
+    }
     
+//    func editAcronymPostHandler(_ req: Request) throws -> Future<Response> {
+//        return try flatMap(to: Response.self, req.parameters.next(Acronym.self), req.content.decode(AcronymPostData.self)) { acronym, data in
+//            acronym.short = data.acronymShort
+//            acronym.long = data.acronymLong
+//            acronym.creatorID = data.creator
+//
+//            return acronym.save(on: req).map(to: Response.self) { acronym in
+//                guard let id = acronym.id else {
+//                    return req.redirect(to: "/")
+//                }
+//                return req.redirect(to: "/acronyms/\(id)")
+//            }
+//        }
+//    }
+    
+    func deleteAcronymHandler(_ req: Request) throws -> Future<Response> {
+        return try req.parameters.next(Acronym.self).flatMap(to: Response.self) { acronym in
+            return acronym.delete(on: req).transform(to: req.redirect(to: "/"))
+        }
+    }
 }
 
 extension Request {
@@ -166,9 +220,17 @@ struct AcronymPostData: Content {
     let creator: UUID
 }
 
+struct EditAcronymContext: Encodable {
+    let title: String
+    let acronym: Acronym
+    let users: [User]
+    let editing = true
+}
+
+
 /*
  TODO:
  1) build all users page ✅
- 2) build category page ✅
+ 2) build   page ✅
  3) build all categories page ✅
  */
