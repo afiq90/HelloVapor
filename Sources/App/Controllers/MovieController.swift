@@ -15,6 +15,7 @@ class MovieController: RouteCollection {
         movieRouter.post(use: createMovie)
         movieRouter.delete(Movie.parameter, use: deleteMovie)
         movieRouter.put(Movie.parameter, use: updateMovie)
+        movieRouter.get(Movie.parameter, "creator", use: getMovieCreatorHandler)
     }
     
     func getAllMovie(_ req: Request) throws -> Future<[Movie]> {
@@ -25,6 +26,13 @@ class MovieController: RouteCollection {
     func getMovie(_ req: Request) throws -> Future<Movie> {
         return try req.parameters.next(Movie.self)
     }
+    
+    func getMovieCreatorHandler(_ req: Request) throws -> Future<User> {
+        return try req.parameters.next(Movie.self).flatMap(to: User.self) { movie in
+            return movie.creator.get(on: req)
+        }
+    }
+    
     
     func createMovie(_ req: Request) throws -> Future<Movie> {
         let movie = try req.content.decode(Movie.self)
@@ -52,4 +60,3 @@ class MovieController: RouteCollection {
     
 }
 
-extension Movie: Parameter {}

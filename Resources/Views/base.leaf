@@ -24,8 +24,14 @@
         <li class="nav-item #if(title == "All Categories"){active}">
           <a href="/categories" class="nav-link">All Categories</a>
         </li>
+        <li class="nav-item #if(title == "All Movies"){active}">
+          <a href="/movies" class="nav-link">All Movies</a>
+        </li>
         <li class="nav-item #if(title == "Create An Acronym"){active}">
           <a href="/create-acronym" class="nav-link">Create An Acronym</a>
+        </li>
+        <li class="nav-item #if(title == "Create A Movie"){active}">
+          <a href="/create-movie" class="nav-link">Create A Movie</a>
         </li>
       </ul>
     </div>

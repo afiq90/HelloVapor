@@ -1,0 +1,29 @@
+#set("content") {
+    <h1>All Movies</h1>
+    
+   #if(count(movies) > 0) {
+    <table class="table table-bordered table-hover">
+      <thead class="thead-light">
+        <tr>
+          <th>
+            Title
+          </th>
+          <th>
+            Release Year
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        #for(movie in movies) {
+          <tr><td><a href="/movie/#(movie.id)">#(movie.title)</a></td><td>#(movie.year)</td></tr>
+        }
+      </tbody>
+    </table>
+  } else {
+    <h2>There aren't any movies yet!</h2>
+  }
+
+
+}
+
+#embed("base")

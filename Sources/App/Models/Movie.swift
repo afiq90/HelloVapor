@@ -13,12 +13,15 @@ final class Movie: Codable {
     var title: String
     var actors: [Actors]?
     var year: Int
-    
-    init(title: String, year: Int) {
+    var creatorID: User.ID
+
+    init(title: String, year: Int, creatorID: User.ID) {
         self.title = title
         self.year = year
 //        self.actors = actors
+        self.creatorID = creatorID
     }
+    
 }
 
 final class Actors: Codable {
@@ -29,3 +32,12 @@ final class Actors: Codable {
 extension Movie: MySQLModel {}
 extension Movie: Content {}
 extension Movie: Migration {}
+extension Movie: Parameter {}
+
+extension Movie {
+    // computed property
+    var creator: Parent<Movie, User> {
+        return parent(\.creatorID)
+    }
+    
+}

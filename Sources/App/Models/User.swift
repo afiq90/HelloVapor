@@ -30,4 +30,8 @@ extension User {
     var acronyms: Children<User, Acronym> {
         return children(\.creatorID)
     }
+    
+    var movies: Children<User, Movie> {
+        return children(\.creatorID)
+    }
 }
