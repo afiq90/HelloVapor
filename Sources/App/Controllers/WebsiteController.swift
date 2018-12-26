@@ -69,7 +69,6 @@ struct WebsiteController: RouteCollection {
         }
     }
     
-    
     func createMoviePostHandler(_ req: Request) throws -> Future<Response> {
         return try req.content.decode(MoviePostData.self).flatMap(to: Response.self) { data in
             let movie = Movie(title: data.title, year: data.year, creatorID: data.creator)
@@ -81,6 +80,10 @@ struct WebsiteController: RouteCollection {
             }
         }
     }
+    
+    /* TODO:
+        create edit ande delete functionality for movie
+     */
     
     /* Acronym Handler */
 
