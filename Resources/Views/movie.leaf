@@ -16,18 +16,23 @@
       </thead>
       <tr>
           <th>
-            #(movieName)
+            #(movie.title)
           </th>
           <th>
-            #(movieYear)
+            #(movie.year)
           </th>
           
         </tr>
     </table>
 
-<p>
+   <p>
     <h5>Created by <a href="/user/#(creator.id)/">#(creator.name)</a></h5>
   </p>
+
+  <form method="post" action="/movies/#(movie.id)/delete">
+    <a class="btn btn-primary" href="/movies/#(movie.id)/edit" role="button">Edit</a>
+    <input class="btn btn-danger" type="submit" value="Delete" />
+  </form> 
   
 }
 

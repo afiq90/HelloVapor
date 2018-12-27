@@ -28,7 +28,9 @@ struct WebsiteController: RouteCollection {
         router.get("movie", Movie.parameter, use: movieHandler)
         router.get("create-movie", use: createMovieHandler)
         router.post("create-movie", use: createMoviePostHandler)
-
+        router.get("movies", Movie.parameter, "edit", use: editMovieHandler)
+        router.post("movies", Movie.parameter, "edit", use: editMoviePostHandler)
+        router.post("movies", Movie.parameter, "delete", use: deleteMovieHandler)
     }
     
     /* Website Index */
@@ -48,7 +50,7 @@ struct WebsiteController: RouteCollection {
     func movieHandler(_ req: Request) throws -> Future<View> {
         return try req.parameters.next(Movie.self).flatMap(to: View.self) { movie in
             return movie.creator.get(on: req).flatMap(to: View.self) { creator in
-                let context = MovieContext(title: "Movie 🎬 🎦", movieName: movie.title, movieYear: movie.year, creator: creator)
+                let context = MovieContext(title: "Movie 🎬 🎦", movie: movie, creator: creator)
                 return try req.leaf().render("movie", context)
             }
         }
@@ -78,6 +80,35 @@ struct WebsiteController: RouteCollection {
                 }
                 return req.redirect(to: "/movie/\(id)")
             }
+        }
+    }
+    
+    func editMovieHandler(_ req: Request) throws -> Future<View> {
+        return try flatMap(to: View.self, req.parameters.next(Movie.self), User.query(on: req).all()) { movie, users in
+            let context = EditMovieContext(title: "Edit Movie", movie: movie, users: users)
+            return try req.leaf().render("createMovie", context)
+        }
+    }
+    
+    func editMoviePostHandler(_ req: Request) throws -> Future<Response> {
+        return try flatMap(to: Response.self, req.parameters.next(Movie.self), req.content.decode(MoviePostData.self)) { movie, data in
+            movie.title = data.title
+            movie.year = data.year
+            movie.creatorID = data.creator
+            
+            return movie.save(on: req).map(to: Response.self) { movie in
+                guard let id = movie.id else {
+                    return req.redirect(to: "/")
+                }
+                return req.redirect(to: "/movie/\(id)")
+            }
+        }
+    }
+    
+    
+    func deleteMovieHandler(_ req: Request) throws -> Future<Response> {
+        return try req.parameters.next(Movie.self).flatMap(to: Response.self) { movie in
+            return movie.delete(on: req).transform(to: req.redirect(to: "/movies"))
         }
     }
     
@@ -239,8 +270,9 @@ struct createAcronymContext: Encodable {
 
 struct MovieContext: Encodable {
     let title: String
-    let movieName: String
-    let movieYear: Int
+//    let movieName: String
+//    let movieYear: Int
+    let movie: Movie
     let creator: User
 }
 
@@ -278,6 +310,12 @@ struct EditAcronymContext: Encodable {
     let editing = true
 }
 
+struct EditMovieContext: Encodable {
+    let title: String
+    let movie: Movie
+    let users: [User]
+    let editing = true
+}
 
 
 /*

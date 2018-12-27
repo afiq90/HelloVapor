@@ -24,7 +24,7 @@ extension User: Content {}
 extension User: Parameter {}
 extension User: Migration {}
 
-// User- Acronym relationship
+// User - Acronym relationship
 // User have many acronyms
 extension User {
     var acronyms: Children<User, Acronym> {
